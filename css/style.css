@@ -10,6 +10,7 @@
     --darker-bg: #050505;
     --text-color: #e0e0e0;
     --card-bg: #1a1a1a;
+    --glow-red: rgba(204, 0, 0, 0.35);
     --blood-drip: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 L100,0 L100,20 C80,40 60,10 40,30 C20,10 10,25 0,15 Z" fill="%238a0303"/></svg>');
 }
 
@@ -25,6 +26,7 @@ body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
 h1,
@@ -58,6 +60,7 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .logo {
@@ -74,10 +77,28 @@ nav {
     color: #fff;
     font-size: 0.9rem;
     font-weight: 500;
+    position: relative;
 }
 
 .nav-links a:hover {
     color: var(--primary-red);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    transform: scaleX(1);
 }
 
 /* Hero Section */
@@ -90,6 +111,7 @@ nav {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), var(--dark-bg)), url('https://images.unsplash.com/photo-1542281286-9e0a16bb7366?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover;
     text-align: center;
     position: relative;
+    overflow: hidden;
 }
 
 .hero h1 {
@@ -119,6 +141,58 @@ nav {
     pointer-events: none;
 }
 
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top, rgba(204, 0, 0, 0.25), transparent 55%);
+    opacity: 0.6;
+    animation: pulseGlow 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 1;
+}
+
+.hero-button {
+    padding: 0.85rem 2.2rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.hero-button.primary {
+    background: var(--primary-red);
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(204, 0, 0, 0.35);
+}
+
+.hero-button.primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 16px 35px rgba(204, 0, 0, 0.5);
+}
+
+.hero-button.ghost {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.hero-button.ghost:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+}
+
 /* Sections */
 section {
     padding: 5rem 2rem;
@@ -145,6 +219,12 @@ section {
     padding: 2rem;
     border-left: 4px solid var(--primary-red);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bio-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
 }
 
 /* Seasons Grid */
@@ -171,7 +251,7 @@ section {
 
 .season-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 40px rgba(204, 0, 0, 0.2);
+    box-shadow: 0 20px 45px rgba(204, 0, 0, 0.25);
 }
 
 .season-poster {
@@ -193,6 +273,12 @@ section {
     height: 100%;
     object-fit: cover;
     display: block;
+    transform: scale(1);
+    transition: transform 0.5s ease;
+}
+
+.season-card:hover .season-poster-img {
+    transform: scale(1.05);
 }
 
 .season-poster.placeholder::after {
@@ -235,11 +321,13 @@ section {
     border: 3px solid var(--primary-red);
     margin-bottom: 1rem;
     filter: grayscale(80%);
-    transition: filter 0.3s;
+    transition: filter 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
 .cast-member:hover img {
     filter: grayscale(0%);
+    transform: translateY(-6px) scale(1.04);
+    box-shadow: 0 12px 25px rgba(204, 0, 0, 0.35);
 }
 
 .cast-member h4 {
@@ -292,7 +380,7 @@ footer {
 .reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: all 0.8s ease;
+    transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .reveal.active {
@@ -310,7 +398,26 @@ footer {
         font-size: 3rem;
     }
 
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
     .bio-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@keyframes pulseGlow {
+    0%,
+    100% {
+        opacity: 0.35;
+    }
+
+    50% {
+        opacity: 0.75;
     }
 }
